@@ -1,0 +1,92 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+const LL MAX=1e6+5;
+vector<LL> GRAPH[MAX];
+LL a[MAX];
+bool vis[MAX];
+bool vis2[MAX];
+LL mn=1e17;
+LL temp_sum=0;
+LL size=0;
+
+void DFS(LL x)
+{
+    vis[x]=true;
+    if(x<mn) mn=x;
+    size++;
+    for(int i=0;i<GRAPH[x].size();i++)
+    {
+        if(!vis[GRAPH[x][i]])
+            DFS(GRAPH[x][i]);
+    }
+}
+
+void DFS2(LL x)
+{
+    vis2[x]=true;
+    if(x==mn) return;
+    temp_sum+=(mn+x);
+    for(int i=0;i<GRAPH[x].size();i++)
+    {
+        if(!vis2[GRAPH[x][i]])
+        {
+            DFS2(GRAPH[x][i]);
+        }
+    }
+}
+
+int main()
+{
+    int ctr=1;
+    while(1)
+    {
+        int n;
+        cin>>n;
+        if(n==0) break;
+        cout<<"Case "<<ctr<<": ";
+        ctr++;
+        memset(vis,false,sizeof(vis));
+        memset(vis2,false,sizeof(vis2));
+        LL temp_mn=1e10;
+        for(int i=1;i<=1000;i++)
+        {
+            GRAPH[i].clear();
+        }
+        LL b[n+2];
+        for(int i=1;i<=n;i++)
+        {
+            cin>>a[i];
+            b[i]=a[i];
+            temp_mn=min(temp_mn,a[i]);
+        }
+        sort(b+1,b+n+1);
+        for(int i=1;i<=n;i++)
+        {
+            GRAPH[b[i]].push_back(a[i]);
+        }
+        LL ans=0;
+        for(int i=1;i<=n;i++)
+        {
+            if(!vis[a[i]])
+            {
+                mn=1e17;
+                temp_sum=0;
+                size=0;
+                DFS(a[i]);
+                if(size==1 || size==0) continue;
+                LL x=(size-1)*mn;
+                LL y=(size-1)*temp_mn+2*(temp_mn+mn);
+                if(y<x)
+                {
+                    
+                    temp_sum+=(temp_mn+mn);
+                    mn=temp_mn;
+                }
+                DFS2(a[i]);
+                ans+=temp_sum;
+            }
+        }
+        cout<<ans<<endl;
+    }
+}
